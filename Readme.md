@@ -35,9 +35,14 @@ cmake .. -DBUILD_EXAMPLES=true
 And then run the examples:
 
 ```shell 
+# where X is the camera device (the first webcam would be 0) for your configuration
+
 # Adaptive lighting
-./adaptive_gamma_example X # where X is the camera device (the first webcam would be 0) for your configuration
+./adaptive_gamma_example X 
 
 # Ball tracking
-./ball_detector_example X # where X is the camera device (the first webcam would be 0) for your configuration
+./ball_detector_example X 
+
+# Setup detection
+./ball_detector_example X 
 ```
