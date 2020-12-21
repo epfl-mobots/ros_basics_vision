@@ -21,3 +21,20 @@ WIP
 ## Tracking aruco markers on the robot
 
 WIP
+
+
+## Running the examples
+
+To compile the examples you should first invoke the following commands:
+
+```shell
+mkdir build; cd build
+cmake .. -DBUILD_EXAMPLES=true
+```
+
+And then run the examples:
+
+```shell 
+# Ball tracking
+./ball_detector_example 1 # where 1 is the camera device for your configuration
+```
