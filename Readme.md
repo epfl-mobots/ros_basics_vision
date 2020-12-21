@@ -12,7 +12,7 @@ This package contains computer vision methods to:
 
 ## Adapting to lighting conditions
 
-WIP
+<img src="examples/images/adaptive_gamma.gif" alt="adaptive_gamma" width="640"/>
 
 ## Tracking orange ping-pong balls
 
@@ -23,7 +23,7 @@ WIP
 WIP
 
 
-## Running the examples
+## Compiling & running the examples
 
 To compile the examples you should first invoke the following commands:
 
@@ -35,6 +35,9 @@ cmake .. -DBUILD_EXAMPLES=true
 And then run the examples:
 
 ```shell 
+# Adaptive lighting
+./adaptive_gamma_example X # where X is the camera device (the first webcam would be 0) for your configuration
+
 # Ball tracking
-./ball_detector_example 1 # where 1 is the camera device for your configuration
+./ball_detector_example X # where X is the camera device (the first webcam would be 0) for your configuration
 ```

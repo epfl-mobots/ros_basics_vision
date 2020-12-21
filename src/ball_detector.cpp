@@ -5,19 +5,6 @@ namespace ros_tp {
     {
     }
 
-    template <typename Params>
-    BallDetector::BallDetector(Params params)
-    {
-        _lb = params.hsv_lb;
-        _ub = params.hsv_ub;
-        _gaussian_kernel_sz = params.gaussian_kernel_sz;
-        _gaussian_sigma = params.gaussian_sigma;
-        _erode_iters = params.erode_iters;
-        _dilate_iters = params.dilate_iters;
-        _min_radius = params.min_radius;
-        _max_radius = params.max_radius;
-    }
-
     std::tuple<Contours, Hierarchy, std::vector<Ball>> BallDetector::detect(const cv::Mat& img) const
     {
         cv::Mat frame = img.clone();
