@@ -30,7 +30,7 @@ namespace ros_tp {
         BallDetector(Params params);
 
         std::tuple<Contours, Hierarchy, std::vector<Ball>> detect(const cv::Mat& img) const;
-        void annotate_image(cv::Mat& img, const std::vector<Ball> ball, bool show_fps = false) const;
+        void annotate_image(cv::Mat& img, const std::vector<Ball> ball) const;
 
         void set_hsv_lower_bound(const cv::Scalar& bound);
         void set_hsv_upper_bound(const cv::Scalar& bound);

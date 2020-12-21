@@ -50,7 +50,7 @@ namespace ros_tp {
         return std::make_tuple(filtered_contours, filtered_hierarchy, balls);
     }
 
-    void BallDetector::annotate_image(cv::Mat& img, const std::vector<Ball> balls, bool show_fps) const
+    void BallDetector::annotate_image(cv::Mat& img, const std::vector<Ball> balls) const
     {
         cv::Scalar bbox_color{0, 255, 255};
         cv::Scalar center_color{0, 0, 255};
