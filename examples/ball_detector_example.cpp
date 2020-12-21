@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     while (true) {
         camera >> frame;
 
-        std::vector<Ball> balls;
+        std::vector<BallDetector::Ball> balls;
         std::tie(std::ignore, std::ignore, balls) = bd.detect(frame);
         bd.annotate_image(frame, balls);
 

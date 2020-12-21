@@ -5,10 +5,10 @@ namespace ros_tp {
     {
     }
 
-    std::tuple<Contours, Hierarchy, std::vector<Ball>> BallDetector::detect(const cv::Mat& img) const
+    std::tuple<BallDetector::Contours, BallDetector::Hierarchy, std::vector<BallDetector::Ball>> BallDetector::detect(const cv::Mat& img) const
     {
         cv::Mat frame = img.clone();
-        cv::GaussianBlur(frame, frame, _gaussian_kernel_sz, _gaussian_sigma);
+        cv::GaussianBlur(frame, frame, _gaussian_kernel_sz, _gaussian_sigma, _gaussian_sigma);
 
         cv::Mat mask, kernel;
         cv::cvtColor(frame, mask, cv::COLOR_BGR2HSV);

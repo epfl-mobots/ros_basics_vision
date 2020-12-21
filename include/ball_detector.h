@@ -4,10 +4,6 @@
 #include <opencv2/opencv.hpp>
 
 namespace ros_tp {
-    using Contours = std::vector<std::vector<cv::Point>>;
-    using Hierarchy = std::vector<cv::Vec4i>;
-    using Ball = std::tuple<cv::Point2f, float>;
-
     namespace defaults {
         struct BallParams {
             cv::Scalar hsv_lb{12, 118, 182};
@@ -24,6 +20,10 @@ namespace ros_tp {
 
     class BallDetector {
     public:
+        using Contours = std::vector<std::vector<cv::Point>>;
+        using Hierarchy = std::vector<cv::Vec4i>;
+        using Ball = std::tuple<cv::Point2f, float>;
+
         BallDetector();
 
         template <typename Params>

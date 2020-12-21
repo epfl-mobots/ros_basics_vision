@@ -19,5 +19,11 @@ if (BUILD_EXAMPLES)
     add_executable(adaptive_gamma_example examples/adaptive_gamma_example.cpp ${ADAPTIVE_GAMMA_SOURCES})
     target_link_libraries(adaptive_gamma_example ${OpenCV_LIBS})
 
+    set(SETUP_DECTOR_INCLUDES include/setup_detector.h)
+    set(SETUP_DECTOR_SOURCES src/setup_detector.cpp)
+
+    add_executable(setup_detector_example examples/setup_detector_example.cpp ${SETUP_DECTOR_SOURCES} ${ADAPTIVE_GAMMA_SOURCES})
+    target_link_libraries(setup_detector_example ${OpenCV_LIBS})
+
 endif()
 
