@@ -12,9 +12,6 @@ namespace ros_tp {
         _current_corners.clear();
         _rejected_candidates.clear();
         cv::aruco::detectMarkers(img, _aruco_dict, _current_corners, _current_ids, _aruco_params, _rejected_candidates);
-
-        if (_current_ids.size()) {
-        }
     }
 
     void ArucoDetector::annotate_image(cv::Mat& img)
