@@ -20,8 +20,7 @@ This package contains computer vision methods to:
 
 ## Tracking aruco markers on the robot
 
-WIP
-
+<img src="examples/images/aruco_tracking.gif" alt="ping_pong" width="640"/>
 
 ## Compiling & running the examples
 
@@ -42,6 +41,9 @@ And then run the examples:
 
 # Ball tracking
 ./ball_detector_example X 
+
+# Aruco detection and pose estimation
+./aruco_detector_example X 
 
 # Setup detection
 ./ball_detector_example X 
