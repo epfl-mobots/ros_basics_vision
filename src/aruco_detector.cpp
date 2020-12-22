@@ -12,6 +12,9 @@ namespace ros_tp {
         _current_corners.clear();
         _rejected_candidates.clear();
         cv::aruco::detectMarkers(img, _aruco_dict, _current_corners, _current_ids, _aruco_params, _rejected_candidates);
+
+        if (_current_ids.size()) {
+        }
     }
 
     void ArucoDetector::annotate_image(cv::Mat& img)
@@ -23,6 +26,26 @@ namespace ros_tp {
             auto tvec = _translation_vecs[i];
             cv::aruco::drawAxis(img, _camera_matrix, _distortion_coeffs, rvec, tvec, 0.1);
         }
+    }
+
+    void ArucoDetector::set_camera_matrix(const cv::Mat& matrix)
+    {
+        _camera_matrix = matrix;
+    }
+
+    void ArucoDetector::set_distortion_coeffs(const cv::Mat& matrix)
+    {
+        _distortion_coeffs = matrix;
+    }
+
+    cv::Mat ArucoDetector::get_camera_matrix() const
+    {
+        return _camera_matrix;
+    }
+
+    cv::Mat ArucoDetector::get_distortion_coeffs() const
+    {
+        return _distortion_coeffs;
     }
 
 } // namespace ros_tp

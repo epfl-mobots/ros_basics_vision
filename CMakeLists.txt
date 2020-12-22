@@ -16,7 +16,6 @@ if (BUILD_EXAMPLES)
     set(ARUCO_DETECTOR_INCLUDES include/aruco_detector.h)
     set(ARUCO_DETECTOR_SOURCES src/aruco_detector.cpp)
 
-    add_compile_definitions(WITH_LOGI_C615)
     add_executable(aruco_detector_example examples/aruco_detector_example.cpp ${ARUCO_DETECTOR_SOURCES})
     target_link_libraries(aruco_detector_example ${OpenCV_LIBS})
 
