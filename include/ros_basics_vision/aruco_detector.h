@@ -9,9 +9,9 @@
 namespace ros_tp {
     namespace defaults {
         struct ArucoDetectorParams {
-            cv::Mat camera_matrix = (cv::Mat_<float>(3, 3) << 1.57415145e+03, 0.00000000e+00, 9.60062009e+02,
-                0.00000000e+00, 1.57042499e+03, 5.41781766e+02, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00);
-            cv::Mat distortion_coeffs = (cv::Mat_<float>(1, 5) << 1.47066028e-02, -7.89474928e-01, -1.53707885e-03, -6.92785954e-03, 2.46659765e+00);
+            cv::Mat camera_matrix = (cv::Mat_<float>(3, 3) << 676.29388356, 0., 360.84513837,
+                0., 674.78103203, 246.63461156, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00);
+            cv::Mat distortion_coeffs = (cv::Mat_<float>(1, 5) << -0.02043813, -0.68790157, -0.0025131, 0.00723699, 1.61278382);
         };
     } // namespace defaults
 
@@ -30,15 +30,23 @@ namespace ros_tp {
         void detect(const cv::Mat& img);
         void annotate_image(cv::Mat& img);
 
+        cv::Vec3d rot2euler(cv::Mat& rot) const;
+
         void set_camera_matrix(const cv::Mat& matrix);
         void set_distortion_coeffs(const cv::Mat& matrix);
         cv::Mat get_camera_matrix() const;
         cv::Mat get_distortion_coeffs() const;
 
+        const std::vector<int>& get_current_ids() const;
+        const std::vector<std::vector<cv::Point2f>>& get_current_corners() const;
+        const std::vector<std::vector<cv::Point2f>>& get_rejected_candidates() const;
+        const std::vector<cv::Vec6d>& get_current_poses() const;
+
     protected:
         std::vector<int> _current_ids;
         std::vector<std::vector<cv::Point2f>> _current_corners;
         std::vector<std::vector<cv::Point2f>> _rejected_candidates;
+        std::vector<cv::Vec6d> _current_poses;
 
         cv::Ptr<cv::aruco::DetectorParameters> _aruco_params;
         cv::Ptr<cv::aruco::Dictionary> _aruco_dict;
