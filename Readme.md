@@ -27,8 +27,7 @@ This package contains computer vision methods to:
 To compile the examples you should first invoke the following commands:
 
 ```shell
-mkdir build; cd build
-cmake .. -DBUILD_EXAMPLES=true
+catkin_make -DBUILD_EXAMPLES=true
 ```
 
 And then run the examples:
