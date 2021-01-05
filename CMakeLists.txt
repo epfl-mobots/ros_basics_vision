@@ -1,10 +1,28 @@
-cmake_minimum_required(VERSION 2.8) 
-PROJECT (ros_tp)
+cmake_minimum_required(VERSION 3.0.2)
+project(ros_basics_solution)
+PROJECT (ros_basics_vision)
 
-find_package(OpenCV REQUIRED)
-find_package(PkgConfig REQUIRED)
+add_compile_options(-std=c++11)
 
-include_directories(include)
+find_package(
+    catkin REQUIRED COMPONENTS
+    OpenCV REQUIRED
+    roscpp
+    rospy
+    geometry_msgs
+    ros_basics_msgs
+)
+
+catkin_package(
+  CATKIN_DEPENDS ros_basics_msgs
+)
+
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+)
+
 
 if (BUILD_EXAMPLES)
     set(BALL_DETECTOR_INCLUDES include/ros_basics_vision/ball_detector.h)
