@@ -1,5 +1,5 @@
-#include <setup_detector.h>
-#include <adaptive_gamma.h>
+#include <ros_basics_vision/setup_detector.h>
+#include <ros_basics_vision/adaptive_gamma.h>
 
 using namespace ros_tp;
 

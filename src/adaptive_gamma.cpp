@@ -1,4 +1,4 @@
-#include <adaptive_gamma.h>
+#include <ros_basics_vision/adaptive_gamma.h>
 
 namespace ros_tp {
 

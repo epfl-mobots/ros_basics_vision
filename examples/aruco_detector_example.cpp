@@ -1,4 +1,4 @@
-#include <aruco_detector.h>
+#include <ros_basics_vision/aruco_detector.h>
 
 using namespace ros_tp;
 
@@ -9,6 +9,9 @@ int main(int argc, char** argv)
         std::cerr << "ERROR: Could not open camera" << std::endl;
         return 1;
     }
+
+    camera.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    camera.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
 
     cv::namedWindow("Aruco Detector", cv::WINDOW_AUTOSIZE);
 

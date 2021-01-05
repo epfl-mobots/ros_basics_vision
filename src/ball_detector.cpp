@@ -1,4 +1,4 @@
-#include <ball_detector.h>
+#include <ros_basics_vision/ball_detector.h>
 
 namespace ros_tp {
     BallDetector::BallDetector() : BallDetector(defaults::BallParams())

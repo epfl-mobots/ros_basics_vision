@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <ball_detector.h>
+#include <ros_basics_vision/ball_detector.h>
 
 using namespace ros_tp;
 

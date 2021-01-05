@@ -1,4 +1,4 @@
-#include <aruco_detector.h>
+#include <ros_basics_vision/aruco_detector.h>
 
 namespace ros_tp {
 

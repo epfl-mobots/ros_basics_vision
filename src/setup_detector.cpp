@@ -1,4 +1,4 @@
-#include <setup_detector.h>
+#include <ros_basics_vision/setup_detector.h>
 
 #include <numeric>
 
