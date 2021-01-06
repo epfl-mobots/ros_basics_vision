@@ -1,0 +1,15 @@
+<launch>
+
+    <arg name="ns" default="/" />
+    <param name="camera_dev" value="6" type="int" />
+    <param name="camera_px_width" value="640" type="int" />
+    <param name="camera_px_height" value="480" type="int" />
+    <param name="pix2mm" value="1.002142315" type="double" />
+    <param name="annotate_image" value="true" type="bool" />
+    <param name="use_mouse_waypoints" value="true" type="bool" />
+
+    <group ns="$(arg ns)">
+        <node name="thymio_tracking_node" pkg="ros_basics_vision" type="thymio_tracking_node" output="screen"/>
+    </group>
+
+</launch>
