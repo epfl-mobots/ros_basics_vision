@@ -36,11 +36,14 @@ namespace ros_tp {
         void set_distortion_coeffs(const cv::Mat& matrix);
         cv::Mat get_camera_matrix() const;
         cv::Mat get_distortion_coeffs() const;
+        std::vector<cv::Vec3d> get_rotation_vecs() const;
+        std::vector<cv::Vec3d> get_translation_vecs() const;
 
         const std::vector<int>& get_current_ids() const;
         const std::vector<std::vector<cv::Point2f>>& get_current_corners() const;
         const std::vector<std::vector<cv::Point2f>>& get_rejected_candidates() const;
         const std::vector<cv::Vec6d>& get_current_poses() const;
+        const std::vector<cv::Point2f> get_pixel_positions() const;
 
     protected:
         std::vector<int> _current_ids;
