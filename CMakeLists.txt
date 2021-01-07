@@ -6,7 +6,8 @@ add_compile_options(-std=c++11)
 file(GLOB TRACKING_SOURCES
     src/*.cpp
 )
-list(REMOVE_ITEM TRACKING_SOURCES "src/thymio_tracking_node.cpp")
+list(FILTER TRACKING_SOURCES EXCLUDE REGEX "thymio_tracking_node.cpp")
+list(FILTER TRACKING_SOURCES EXCLUDE REGEX "thymio_simu_tracking_node.cpp")
 
 find_package(
     catkin REQUIRED COMPONENTS
@@ -57,7 +58,13 @@ if (BUILD_EXAMPLES)
     target_link_libraries(setup_detector_example ${OpenCV_LIBS})
 endif()
 
+message(STATUS ${TRACKING_SOURCES})
+
 add_executable(thymio_tracking_node src/thymio_tracking_node.cpp ${TRACKING_SOURCES})
 target_link_libraries(thymio_tracking_node ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(thymio_tracking_node ${catkin_EXPORTED_TARGETS} ros_basics_msgs_generate_messages_cpp)
+
+add_executable(thymio_simu_tracking_node src/thymio_simu_tracking_node.cpp ${TRACKING_SOURCES})
+target_link_libraries(thymio_simu_tracking_node ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(thymio_simu_tracking_node ${catkin_EXPORTED_TARGETS} ros_basics_msgs_generate_messages_cpp)
 

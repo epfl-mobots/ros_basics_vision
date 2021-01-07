@@ -1,0 +1,9 @@
+<launch>
+
+    <rosparam file="$(find ros_basics_vision)/config/thymio_tracking_params.yaml" />
+    <arg name="ns" default="/" />
+    <group ns="$(arg ns)">
+        <node name="thymio_simu_tracking_node" pkg="ros_basics_vision" type="thymio_simu_tracking_node" output="screen"/>
+    </group>
+
+</launch>
