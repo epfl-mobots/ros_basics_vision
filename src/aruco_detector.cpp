@@ -28,11 +28,13 @@ namespace ros_tp {
 
     void ArucoDetector::annotate_image(cv::Mat& img)
     {
-        cv::aruco::drawDetectedMarkers(img, _current_corners, _current_ids, cv::Scalar(0, 0, 255));
-        for (int i = 0; i < _rotation_vecs.size(); ++i) {
-            auto rvec = _rotation_vecs[i];
-            auto tvec = _translation_vecs[i];
-            cv::aruco::drawAxis(img, _camera_matrix, _distortion_coeffs, rvec, tvec, 0.1);
+        if (_current_corners.size()) {
+            cv::aruco::drawDetectedMarkers(img, _current_corners, _current_ids, cv::Scalar(0, 0, 255));
+            for (int i = 0; i < _rotation_vecs.size(); ++i) {
+                auto rvec = _rotation_vecs[i];
+                auto tvec = _translation_vecs[i];
+                cv::aruco::drawAxis(img, _camera_matrix, _distortion_coeffs, rvec, tvec, 0.1);
+            }
         }
     }
 

@@ -19,6 +19,7 @@ namespace ros_tp {
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
+            _get_waypoints_cli.waitForExistence();
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
@@ -33,6 +34,7 @@ namespace ros_tp {
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
+            _get_waypoints_cli.waitForExistence();
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
@@ -49,7 +51,7 @@ namespace ros_tp {
             double dt = ros::Duration(now - _prev_stamp).toSec();
 
             _ad->annotate_image(frame); // publish annotated image with aruco marker
-            draw_heading(frame);
+            draw_pose(frame);
             draw_waypoints(frame);
             // draw_origin(frame);
             draw_camera_origin(frame);
@@ -60,37 +62,41 @@ namespace ros_tp {
             publish(frame);
         }
 
-        void draw_heading(cv::Mat& frame, cv::Point2f pos, double angle)
+        void draw_pose(cv::Mat& frame, cv::Point2f pos, double angle)
         {
             std::stringstream yaw_stream;
             yaw_stream << std::fixed << std::setprecision(2) << angle * 180. / M_PI;
             cv::putText(frame,
                 "Hdg: " + yaw_stream.str(),
-                cv::Point(pos.x * 1.06, pos.y * 1.1),
+                cv::Point(pos.x + 5, pos.y - 30),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
                 2);
 
             std::stringstream pos_stream;
-            pos_stream << std::fixed << std::setprecision(4) << pos.x * _pix2mm / 1000. << ", " << pos.y * _pix2mm / 1000.;
+            pos_stream << std::fixed << std::setprecision(4) << (pos.x - _ccenter.x) * _pix2mm / 1000. << ", " << -(pos.y - _ccenter.y) * _pix2mm / 1000.;
             cv::putText(frame,
                 "Pos: (" + pos_stream.str() + ")",
-                cv::Point(pos.x * 1.06, pos.y * 1.2),
+                cv::Point(pos.x + 5, pos.y - 10),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
                 2);
         }
 
-        void draw_heading(cv::Mat& frame)
+        void draw_pose(cv::Mat& frame)
         {
-            // heading on frame
-            cv::Point2f centroid = _ad->get_pixel_positions()[0];
-            cv::Vec6d pose = _ad->get_current_poses()[0];
-
             if (_ad->get_current_poses().size()) {
-                draw_heading(frame, centroid, pose[5]);
+                // heading on frame
+                cv::Point2f centroid = _ad->get_pixel_positions()[0];
+                centroid.x = centroid.x - _ccenter.x;
+                centroid.x = centroid.y - _ccenter.y;
+                cv::Vec6d pose = _ad->get_current_poses()[0];
+
+                if (_ad->get_current_poses().size()) {
+                    draw_pose(frame, centroid, pose[5]);
+                }
             }
         }
 
@@ -101,6 +107,7 @@ namespace ros_tp {
                 auto waypoints = srv.response.waypoints;
                 for (size_t i = 0; i < waypoints.size(); ++i) {
                     cv::Point wp((waypoints[i].x * 1000.) / _pix2mm + _ccenter.x, (waypoints[i].y * 1000.) / _pix2mm + _ccenter.y);
+                    wp.y = 2 * _ccenter.y - wp.y;
                     cv::circle(frame, wp, 5, cv::Scalar(255, 255, 0), cv::FILLED, 10, 0);
                     std::stringstream stream;
                     stream << i;
@@ -144,20 +151,19 @@ namespace ros_tp {
 
         void draw_axes(cv::Mat& frame)
         {
-            cv::Point center(frame.size().width * 0.03, frame.size().height * 0.95);
-            cv::arrowedLine(frame, center, center - cv::Point(0, frame.size().height * 0.1), CV_RGB(255, 0, 0), 2, 8, 0, 0.1);
-            cv::arrowedLine(frame, center, center + cv::Point(frame.size().height * 0.1, 0), CV_RGB(255, 0, 0), 2, 8, 0, 0.1);
+            cv::arrowedLine(frame, _ccenter, _ccenter - cv::Point(0, frame.size().height * 0.1), CV_RGB(255, 0, 0), 2, 8, 0, 0.1);
+            cv::arrowedLine(frame, _ccenter, _ccenter + cv::Point(frame.size().height * 0.1, 0), CV_RGB(255, 0, 0), 2, 8, 0, 0.1);
 
             cv::putText(frame,
                 "y",
-                center - cv::Point(30, frame.size().height * 0.1) / 2.5,
+                _ccenter - cv::Point(30, frame.size().height * 0.1) / 2.5,
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(255, 0, 0),
                 1);
             cv::putText(frame,
                 "x",
-                center + cv::Point(frame.size().height * 0.1, 30) / 2.5,
+                _ccenter + cv::Point(frame.size().height * 0.1, 30) / 2.5,
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(255, 0, 0),

@@ -22,7 +22,7 @@ struct MouseDetect {
             cv::Point p(x - camera_px_width / 2, y - camera_px_height / 2);
             geometry_msgs::Pose2D wp;
             wp.x = (p.x * pix2mm) / 1000;
-            wp.y = (p.y * pix2mm) / 1000;
+            wp.y = -(p.y * pix2mm) / 1000;
 
             ros_basics_msgs::AddWaypoint srv;
             srv.request.goal = wp;
@@ -58,24 +58,15 @@ public:
             MouseDetect::add_waypoint_cli = this->_nh->serviceClient<ros_basics_msgs::AddWaypoint>("add_waypoint");
             cv::setMouseCallback(_window_name, MouseDetect::onMouse);
         }
-        _odom_sub = this->_nh->subscribe("odom", 5, &RawFrameWrapper::odom_callback, this);
+        _odom_sub = this->_nh->subscribe("robot_pose", 5, &RawFrameWrapper::pose_callback, this);
         _prev_stamp = ros::Time::now();
     }
 
-    void odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
+    void pose_callback(const ros_basics_msgs::SimplePoseStamped::ConstPtr& msg)
     {
         // position
-        _pos = cv::Point2f(msg->pose.pose.position.x * 1000 / _pix2mm + this->_ccenter.x, msg->pose.pose.position.y * 1000 / _pix2mm + this->_ccenter.y);
-
-        // orientation, from quaternions to roll, pitch, yaw
-        tf::Quaternion q(
-            msg->pose.pose.orientation.x,
-            msg->pose.pose.orientation.y,
-            msg->pose.pose.orientation.z,
-            msg->pose.pose.orientation.w);
-        tf::Matrix3x3 m(q);
-        double roll, pitch;
-        m.getRPY(roll, pitch, _yaw);
+        _pos = cv::Point2f(msg->pose.xyz.x * 1000 / _pix2mm + this->_ccenter.x, 2 * msg->pose.xyz.y * 1000 / _pix2mm + this->_ccenter.y);
+        _yaw = msg->pose.rpy.yaw;
     }
 
     void draw_info(cv::Mat& frame)
@@ -83,7 +74,9 @@ public:
         ros::Time now = ros::Time::now();
         double dt = ros::Duration(now - _prev_stamp).toSec();
 
-        this->draw_heading(frame, _pos, _yaw);
+        cv::Point2f inv_pos(_pos);
+        inv_pos.y = 2 * this->_ccenter.y - inv_pos.y;
+        this->draw_pose(frame, inv_pos, _yaw);
         this->draw_waypoints(frame);
         this->draw_camera_origin(frame);
         this->draw_axes(frame);
@@ -98,6 +91,7 @@ public:
         try {
             cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
             if (_annotate_image) {
+                // cv::flip(frame, frame, 0);
                 draw_info(frame);
             }
             cv::imshow(_window_name, frame);
