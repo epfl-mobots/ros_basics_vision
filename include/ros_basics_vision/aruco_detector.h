@@ -46,6 +46,8 @@ namespace ros_tp {
         const std::vector<cv::Point2f> get_pixel_positions() const;
 
     protected:
+        double _angle_to_pipi(double angle);
+
         std::vector<int> _current_ids;
         std::vector<std::vector<cv::Point2f>> _current_corners;
         std::vector<std::vector<cv::Point2f>> _rejected_candidates;

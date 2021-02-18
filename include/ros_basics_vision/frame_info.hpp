@@ -23,7 +23,7 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.68);
+            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.63);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
@@ -38,7 +38,7 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.68);
+            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.63);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
@@ -68,7 +68,7 @@ namespace ros_tp {
             yaw_stream << std::fixed << std::setprecision(2) << angle * 180. / M_PI;
             cv::putText(frame,
                 "Hdg: " + yaw_stream.str(),
-                cv::Point(pos.x + 5, pos.y - 30),
+                cv::Point(pos.x, pos.y - 30),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
@@ -78,7 +78,7 @@ namespace ros_tp {
             pos_stream << std::fixed << std::setprecision(4) << (pos.x - _ccenter.x) * _pix2mm / 1000. << ", " << -(pos.y - _ccenter.y) * _pix2mm / 1000.;
             cv::putText(frame,
                 "Pos: (" + pos_stream.str() + ")",
-                cv::Point(pos.x + 5, pos.y - 10),
+                cv::Point(pos.x, pos.y),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
@@ -90,10 +90,7 @@ namespace ros_tp {
             if (_ad->get_current_poses().size()) {
                 // heading on frame
                 cv::Point2f centroid = _ad->get_pixel_positions()[0];
-                centroid.x = centroid.x - _ccenter.x;
-                centroid.x = centroid.y - _ccenter.y;
                 cv::Vec6d pose = _ad->get_current_poses()[0];
-
                 if (_ad->get_current_poses().size()) {
                     draw_pose(frame, centroid, pose[5]);
                 }

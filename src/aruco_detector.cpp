@@ -19,9 +19,13 @@ namespace ros_tp {
         for (int i = 0; i < _rotation_vecs.size(); ++i) {
             auto rvec = _rotation_vecs[i];
             auto tvec = _translation_vecs[i];
+            tvec[1] = -tvec[1];
+            tvec[2] = -tvec[2];
+
             cv::Mat rot;
             cv::Rodrigues(rvec, rot);
             cv::Vec3d rpy = rot2euler(rot);
+            rpy[2] = -_angle_to_pipi(rpy[2] - M_PI / 2);
             _current_poses.push_back(cv::Vec6d(tvec[0], tvec[1], tvec[2], rpy[0], rpy[1], rpy[2]));
         }
     }
@@ -110,11 +114,27 @@ namespace ros_tp {
         std::vector<cv::Point2f> positions;
         for (const std::vector<cv::Point2f>& corners : _current_corners) {
             cv::Point2f p;
-            p.x = (corners[0].x + corners[1].x + corners[2].x + corners[3].x) / 4;
-            p.y = (corners[0].y + corners[1].y + corners[2].y + corners[3].y) / 4;
+            p.x = (corners[0].x + corners[1].x + corners[2].x + corners[3].x) / 4.;
+            p.y = (corners[0].y + corners[1].y + corners[2].y + corners[3].y) / 4.;
             positions.push_back(p);
         }
         return positions;
+    }
+
+    double ArucoDetector::_angle_to_pipi(double angle)
+    {
+        while (true) {
+            if (angle < -M_PI) {
+                angle += 2. * M_PI;
+            }
+            if (angle > M_PI) {
+                angle -= 2. * M_PI;
+            }
+            if (abs(angle) <= M_PI) {
+                break;
+            }
+        }
+        return angle;
     }
 
 } // namespace ros_tp

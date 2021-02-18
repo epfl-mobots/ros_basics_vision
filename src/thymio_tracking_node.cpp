@@ -113,7 +113,7 @@ int main(int argc, char** argv)
             ros_basics_msgs::SimplePoseStamped pose; // ! we only use the first robot (no multi robot support for now)
             pose.header.stamp = ros::Time::now();
             pose.pose.xyz.x = poses[0][0];
-            pose.pose.xyz.y = -poses[0][1];
+            pose.pose.xyz.y = poses[0][1];
             pose.pose.xyz.z = poses[0][2];
             pose.pose.rpy.roll = poses[0][3];
             pose.pose.rpy.pitch = poses[0][4];
