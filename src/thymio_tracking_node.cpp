@@ -108,12 +108,16 @@ int main(int argc, char** argv)
         ad->detect(frame);
 
         std::vector<cv::Vec6d> poses = ad->get_current_poses();
+        std::vector<cv::Point2f> pix_pos = ad->get_pixel_positions();
+
         if (poses.size()) {
             // publish robot pose if a robot was detected
             ros_basics_msgs::SimplePoseStamped pose; // ! we only use the first robot (no multi robot support for now)
             pose.header.stamp = ros::Time::now();
-            pose.pose.xyz.x = poses[0][0];
-            pose.pose.xyz.y = poses[0][1];
+            pose.pose.xyz.x = pix_pos[0].x * pix2mm;
+            pose.pose.xyz.y = pix_pos[0].y * pix2mm;
+            //     pose.pose.xyz.x = poses[0][0];
+            //     pose.pose.xyz.y = poses[0][1];
             pose.pose.xyz.z = poses[0][2];
             pose.pose.rpy.roll = poses[0][3];
             pose.pose.rpy.pitch = poses[0][4];
