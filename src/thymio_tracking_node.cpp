@@ -82,11 +82,16 @@ int main(int argc, char** argv)
     ros::Publisher robot_pose_pub;
     robot_pose_pub = nh->advertise<ros_basics_msgs::SimplePoseStamped>("robot_pose", 1);
 
-    cv::Mat frame;
+    cv::Mat frame, frame_und;
+
     std::shared_ptr<ArucoDetector> ad(new ArucoDetector());
     std::vector<float> camera_mat, distortion_coeffs;
     nh->getParam("camera_matrix", camera_mat);
     nh->getParam("distortion_coeffs", distortion_coeffs);
+
+    cv::Rect roi;
+    cv::Mat new_camera_mat = cv::getOptimalNewCameraMatrix(camera_mat, distortion_coeffs, cv::Size(camera_px_width, camera_px_height), 1., cv::Size(camera_px_width, camera_px_height), &roi);
+
     if (camera_mat.size() && distortion_coeffs.size()) {
         cv::Mat cm(cv::Size(3, 3), CV_32F, camera_mat.data());
         cv::Mat dc(cv::Size(1, 5), CV_32F, distortion_coeffs.data());
@@ -103,6 +108,9 @@ int main(int argc, char** argv)
         // publish raw image
         sensor_msgs::ImagePtr raw_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
         raw_image_pub.publish(raw_msg);
+
+        cv::undistort(frame, frame_und, camera_mat, distortion_coeffs, new_camera_mat);
+        frame = frame_und(roi);
 
         // detect aruco markers
         ad->detect(frame);
