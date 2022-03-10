@@ -6,19 +6,23 @@ namespace ros_tp {
     {
     }
 
-    void ArucoDetector::detect(const cv::Mat& img)
+    void ArucoDetector::detect(const cv::Mat& frame)
     {
         _current_ids.clear();
         _current_corners.clear();
         _rejected_candidates.clear();
         _current_poses.clear();
 
+        cv::Mat img;
+        cv::cvtColor(frame, img, cv::COLOR_BGR2GRAY);
+
         cv::aruco::detectMarkers(img, _aruco_dict, _current_corners, _current_ids, _aruco_params, _rejected_candidates);
-        cv::aruco::estimatePoseSingleMarkers(_current_corners, 0.05, _camera_matrix, _distortion_coeffs, _rotation_vecs, _translation_vecs);
+        cv::aruco::estimatePoseSingleMarkers(_current_corners, _marker_size_m, _camera_matrix, _distortion_coeffs, _rotation_vecs, _translation_vecs);
 
         for (int i = 0; i < _rotation_vecs.size(); ++i) {
             auto rvec = _rotation_vecs[i];
             auto tvec = _translation_vecs[i];
+
             tvec[1] = -tvec[1];
             tvec[2] = -tvec[2];
 
@@ -27,6 +31,10 @@ namespace ros_tp {
             cv::Vec3d rpy = rot2euler(rot);
             rpy[2] = -_angle_to_pipi(rpy[2] - M_PI / 2);
             _current_poses.push_back(cv::Vec6d(tvec[0], tvec[1], tvec[2], rpy[0], rpy[1], rpy[2]));
+
+            _pix2m = std::min(
+                _marker_size_m / sqrt(pow(_current_corners[0][0].x - _current_corners[0][1].x, 2.) + pow(_current_corners[0][0].y - _current_corners[0][1].y, 2.)),
+                _marker_size_m / sqrt(pow(_current_corners[0][0].x - _current_corners[0][2].x, 2.) + pow(_current_corners[0][0].y - _current_corners[0][2].y, 2.)));
         }
     }
 
@@ -67,6 +75,11 @@ namespace ros_tp {
     void ArucoDetector::set_distortion_coeffs(const cv::Mat& matrix)
     {
         _distortion_coeffs = matrix;
+    }
+
+    void ArucoDetector::set_marker_size(const double marker_size_m)
+    {
+        _marker_size_m = marker_size_m;
     }
 
     cv::Mat ArucoDetector::get_camera_matrix() const
@@ -119,6 +132,11 @@ namespace ros_tp {
             positions.push_back(p);
         }
         return positions;
+    }
+
+    const double ArucoDetector::get_pix2m() const
+    {
+        return _pix2m;
     }
 
     double ArucoDetector::_angle_to_pipi(double angle)

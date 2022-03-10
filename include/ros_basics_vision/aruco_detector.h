@@ -9,9 +9,9 @@
 namespace ros_tp {
     namespace defaults {
         struct ArucoDetectorParams {
-            cv::Mat camera_matrix = (cv::Mat_<float>(3, 3) << 676.29388356, 0., 360.84513837,
-                0., 674.78103203, 246.63461156, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00);
-            cv::Mat distortion_coeffs = (cv::Mat_<float>(1, 5) << -0.02043813, -0.68790157, -0.0025131, 0.00723699, 1.61278382);
+            cv::Mat camera_matrix = (cv::Mat_<float>(3, 3) << 674.905111, 0.000000, 300.802978, 0.000000, 681.255848, 282.315032, 0.000000, 0.000000, 1.000000);
+            cv::Mat distortion_coeffs = (cv::Mat_<float>(1, 5) << 0.066646, -0.058044, 0.007943, -0.004270, 0.000000);
+            double marker_size_m = 0.075;
         };
     } // namespace defaults
 
@@ -25,6 +25,8 @@ namespace ros_tp {
         {
             _camera_matrix = params.camera_matrix;
             _distortion_coeffs = params.distortion_coeffs;
+            _marker_size_m = params.marker_size_m;
+            _pix2m = _marker_size_m / 500;
         }
 
         void detect(const cv::Mat& img);
@@ -34,6 +36,7 @@ namespace ros_tp {
 
         void set_camera_matrix(const cv::Mat& matrix);
         void set_distortion_coeffs(const cv::Mat& matrix);
+        void set_marker_size(const double marker_size_m);
         cv::Mat get_camera_matrix() const;
         cv::Mat get_distortion_coeffs() const;
         std::vector<cv::Vec3d> get_rotation_vecs() const;
@@ -44,6 +47,7 @@ namespace ros_tp {
         const std::vector<std::vector<cv::Point2f>>& get_rejected_candidates() const;
         const std::vector<cv::Vec6d>& get_current_poses() const;
         const std::vector<cv::Point2f> get_pixel_positions() const;
+        const double get_pix2m() const;
 
     protected:
         double _angle_to_pipi(double angle);
@@ -60,6 +64,9 @@ namespace ros_tp {
         cv::Mat _distortion_coeffs;
         std::vector<cv::Vec3d> _rotation_vecs;
         std::vector<cv::Vec3d> _translation_vecs;
+
+        double _marker_size_m;
+        double _pix2m;
     };
 
 } // namespace ros_tp

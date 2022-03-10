@@ -15,7 +15,7 @@
 namespace ros_tp {
     class FrameInfo {
     public:
-        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<image_transport::ImageTransport> it, double pix2mm, int width, int height) : _nh(nh), _it(it), _pix2mm(pix2mm)
+        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<image_transport::ImageTransport> it, int width, int height) : _nh(nh), _it(it)
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
@@ -23,14 +23,14 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.63);
+            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -0.63);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
-            _ccenter = cv::Point(C.at<double>(0, 0) * 1000. / _pix2mm, C.at<double>(0, 1) * 1000. / _pix2mm);
+            _ccenter = cv::Point(C.at<double>(0, 0) / _pix2m(), C.at<double>(0, 1) / _pix2m());
         }
 
-        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<ArucoDetector> ad, std::shared_ptr<image_transport::ImageTransport> it, double pix2mm, int width, int height) : _nh(nh), _ad(ad), _it(it), _pix2mm(pix2mm)
+        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<ArucoDetector> ad, std::shared_ptr<image_transport::ImageTransport> it, int width, int height) : _nh(nh), _ad(ad), _it(it)
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
@@ -38,11 +38,11 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2mm / 1000, (height / 2.) * _pix2mm / 1000, -0.63);
+            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -0.63);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
-            _ccenter = cv::Point(C.at<double>(0, 0) * 1000. / _pix2mm, C.at<double>(0, 1) * 1000. / _pix2mm);
+            _ccenter = cv::Point(C.at<double>(0, 0) / _pix2m(), C.at<double>(0, 1) / _pix2m());
         }
 
         void draw_info(cv::Mat& frame)
@@ -68,17 +68,17 @@ namespace ros_tp {
             yaw_stream << std::fixed << std::setprecision(2) << angle * 180. / M_PI;
             cv::putText(frame,
                 "Hdg: " + yaw_stream.str(),
-                cv::Point(pos.x, pos.y - 30),
+                cv::Point(pos.x + 20, pos.y - 40),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
                 2);
 
             std::stringstream pos_stream;
-            pos_stream << std::fixed << std::setprecision(4) << (pos.x - _ccenter.x) * _pix2mm / 1000. << ", " << -(pos.y - _ccenter.y) * _pix2mm / 1000.;
+            pos_stream << std::fixed << std::setprecision(4) << (pos.x - _ccenter.x) * _pix2m() << ", " << -(pos.y - _ccenter.y) * _pix2m();
             cv::putText(frame,
                 "Pos: (" + pos_stream.str() + ")",
-                cv::Point(pos.x, pos.y),
+                cv::Point(pos.x + 20, pos.y - 20),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
@@ -103,7 +103,7 @@ namespace ros_tp {
             if (_get_waypoints_cli.call(srv)) {
                 auto waypoints = srv.response.waypoints;
                 for (size_t i = 0; i < waypoints.size(); ++i) {
-                    cv::Point wp((waypoints[i].x * 1000.) / _pix2mm + _ccenter.x, (waypoints[i].y * 1000.) / _pix2mm + _ccenter.y);
+                    cv::Point wp((waypoints[i].x) / _pix2m() + _ccenter.x, (waypoints[i].y) / _pix2m() + _ccenter.y);
                     wp.y = 2 * _ccenter.y - wp.y;
                     cv::circle(frame, wp, 5, cv::Scalar(255, 255, 0), cv::FILLED, 10, 0);
                     std::stringstream stream;
@@ -187,15 +187,25 @@ namespace ros_tp {
         }
 
     protected:
+        virtual double _pix2m()
+        {
+            if (_ad != nullptr) {
+                return _ad->get_pix2m();
+            }
+            else {
+                return _pix2m_simu;
+            }
+        }
+
         image_transport::Publisher _annot_image_pub;
         std::shared_ptr<ros::NodeHandle> _nh;
         std::shared_ptr<ArucoDetector> _ad;
         std::shared_ptr<image_transport::ImageTransport> _it;
-        double _pix2mm;
         ros::ServiceClient _get_waypoints_cli;
         ros::Time _prev_stamp;
         ros::Duration _dt;
         cv::Point _ccenter;
+        double _pix2m_simu;
     };
 
 } // namespace ros_tp
