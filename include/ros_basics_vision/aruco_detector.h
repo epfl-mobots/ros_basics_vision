@@ -27,6 +27,7 @@ namespace ros_tp {
             _distortion_coeffs = params.distortion_coeffs;
             _marker_size_m = params.marker_size_m;
             _pix2m = _marker_size_m / 500;
+            _init_pix2m = false;
         }
 
         void detect(const cv::Mat& img);
@@ -67,6 +68,7 @@ namespace ros_tp {
 
         double _marker_size_m;
         double _pix2m;
+        bool _init_pix2m;
     };
 
 } // namespace ros_tp
