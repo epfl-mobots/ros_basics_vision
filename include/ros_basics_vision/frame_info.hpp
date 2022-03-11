@@ -103,7 +103,7 @@ namespace ros_tp {
             if (_get_waypoints_cli.call(srv)) {
                 auto waypoints = srv.response.waypoints;
                 for (size_t i = 0; i < waypoints.size(); ++i) {
-                    cv::Point wp((waypoints[i].x) / _pix2m() + _ccenter.x, (waypoints[i].y) / _pix2m() + _ccenter.y);
+                    cv::Point wp((int)(waypoints[i].x / _pix2m() + _ccenter.x), (int)(waypoints[i].y / _pix2m() + _ccenter.y));
                     wp.y = 2 * _ccenter.y - wp.y;
                     cv::circle(frame, wp, 5, cv::Scalar(255, 255, 0), cv::FILLED, 10, 0);
                     std::stringstream stream;
