@@ -84,7 +84,9 @@ int main(int argc, char** argv)
     cv::Mat frame, frame_und;
 
     double marker_size_cm;
-    std::shared_ptr<ArucoDetector> ad(new ArucoDetector());
+    bool reinit_pix2m;
+    nh->param<bool>("reinit_pix2m", reinit_pix2m, false);
+    std::shared_ptr<ArucoDetector> ad(new ArucoDetector(reinit_pix2m));
     std::vector<double> camera_mat_vec, distortion_coeffs_vec;
     nh->getParam("camera_matrix", camera_mat_vec);
     nh->getParam("distortion_coeffs", distortion_coeffs_vec);

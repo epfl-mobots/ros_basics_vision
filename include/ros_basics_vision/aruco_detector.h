@@ -17,17 +17,18 @@ namespace ros_tp {
 
     class ArucoDetector {
     public:
-        ArucoDetector();
+        ArucoDetector(bool reinit_pix2m = false);
 
         template <typename Params>
-        ArucoDetector(Params params) : _aruco_params(cv::aruco::DetectorParameters::create()),
-                                       _aruco_dict(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000))
+        ArucoDetector(Params params, bool reinit_pix2m = false) : _aruco_params(cv::aruco::DetectorParameters::create()),
+                                                                  _aruco_dict(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000))
         {
             _camera_matrix = params.camera_matrix;
             _distortion_coeffs = params.distortion_coeffs;
             _marker_size_m = params.marker_size_m;
             _pix2m = _marker_size_m / 500;
             _init_pix2m = false;
+            _reinit_pix2m = reinit_pix2m;
         }
 
         void detect(const cv::Mat& img);
@@ -69,6 +70,7 @@ namespace ros_tp {
         double _marker_size_m;
         double _pix2m;
         bool _init_pix2m;
+        bool _reinit_pix2m;
     };
 
 } // namespace ros_tp
