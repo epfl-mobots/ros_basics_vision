@@ -119,7 +119,10 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     std::shared_ptr<image_transport::ImageTransport> it(new image_transport::ImageTransport(nh));
 
-    RawFrameWrapper rfw(std::make_shared<ros::NodeHandle>(nh), it, 0.0011);
+    float simu_pix2m;
+    nh.param<float>("simu_pix2m", simu_pix2m, 0.0017);
+
+    RawFrameWrapper rfw(std::make_shared<ros::NodeHandle>(nh), it, simu_pix2m);
     image_transport::Subscriber sub = it->subscribe("robot_view/image_raw", 1, &RawFrameWrapper::annot_image_cb, &rfw);
 
     ros::spin();
