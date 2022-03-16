@@ -68,8 +68,8 @@ namespace ros_tp {
             std::stringstream yaw_stream;
             yaw_stream << std::fixed << std::setprecision(2) << angle * 180. / M_PI;
             cv::putText(frame,
-                "Hdg: " + yaw_stream.str(),
-                cv::Point(pos.x + 20, pos.y - 40),
+                "Hdg (deg): " + yaw_stream.str(),
+                cv::Point(frame.size().width * 0.03, frame.size().height * 0.97),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
@@ -78,8 +78,8 @@ namespace ros_tp {
             std::stringstream pos_stream;
             pos_stream << std::fixed << std::setprecision(4) << (pos.x - _ccenter.x) * _pix2m() << ", " << -(pos.y - _ccenter.y) * _pix2m();
             cv::putText(frame,
-                "Pos: (" + pos_stream.str() + ")",
-                cv::Point(pos.x + 20, pos.y - 20),
+                "Pos (m): (" + pos_stream.str() + ")",
+                cv::Point(frame.size().width * 0.03, frame.size().height * 0.93),
                 cv::FONT_HERSHEY_DUPLEX,
                 0.5,
                 CV_RGB(180, 0, 0),
