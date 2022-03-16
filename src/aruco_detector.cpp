@@ -2,7 +2,7 @@
 
 namespace ros_tp {
 
-    ArucoDetector::ArucoDetector(bool reinit_pix2m) : ArucoDetector(defaults::ArucoDetectorParams(), reinit_pix2m)
+    ArucoDetector::ArucoDetector() : ArucoDetector(defaults::ArucoDetectorParams())
     {
     }
 
@@ -31,13 +31,6 @@ namespace ros_tp {
             cv::Vec3d rpy = rot2euler(rot);
             rpy[2] = -_angle_to_pipi(rpy[2] - M_PI / 2);
             _current_poses.push_back(cv::Vec6d(tvec[0], tvec[1], tvec[2], rpy[0], rpy[1], rpy[2]));
-
-            if (!_init_pix2m || _reinit_pix2m) {
-                _pix2m = std::min(
-                    _marker_size_m / sqrt(pow(_current_corners[0][0].x - _current_corners[0][1].x, 2.) + pow(_current_corners[0][0].y - _current_corners[0][1].y, 2.)),
-                    _marker_size_m / sqrt(pow(_current_corners[0][0].x - _current_corners[0][2].x, 2.) + pow(_current_corners[0][0].y - _current_corners[0][2].y, 2.)));
-                _init_pix2m = true;
-            }
         }
     }
 
@@ -135,11 +128,6 @@ namespace ros_tp {
             positions.push_back(p);
         }
         return positions;
-    }
-
-    const double ArucoDetector::get_pix2m() const
-    {
-        return _pix2m;
     }
 
     double ArucoDetector::_angle_to_pipi(double angle)

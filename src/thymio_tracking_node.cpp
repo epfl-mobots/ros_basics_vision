@@ -68,6 +68,8 @@ int main(int argc, char** argv)
     bool annotate_image, use_mouse_waypoints;
     nh->param<bool>("annotate_image", annotate_image, true);
     nh->param<bool>("use_mouse_waypoints", use_mouse_waypoints, true);
+    double pix2m;
+    nh->param<double>("real_pix2m", pix2m, 0.001403);
     if (use_mouse_waypoints) {
         std::string name = "Tracking Robot - Interactive";
         cv::namedWindow(name);
@@ -76,6 +78,7 @@ int main(int argc, char** argv)
         MouseDetect::add_waypoint_cli = nh->serviceClient<ros_basics_msgs::AddWaypoint>("add_waypoint");
         cv::setMouseCallback(name, MouseDetect::onMouse);
         MouseDetect::add_waypoint_cli.waitForExistence();
+        MouseDetect::pix2m = pix2m;
     }
 
     ros::Publisher robot_pose_pub;
@@ -84,9 +87,7 @@ int main(int argc, char** argv)
     cv::Mat frame, frame_und;
 
     double marker_size_cm;
-    bool reinit_pix2m;
-    nh->param<bool>("reinit_pix2m", reinit_pix2m, false);
-    std::shared_ptr<ArucoDetector> ad(new ArucoDetector(reinit_pix2m));
+    std::shared_ptr<ArucoDetector> ad(new ArucoDetector());
     std::vector<double> camera_mat_vec, distortion_coeffs_vec;
     nh->getParam("camera_matrix", camera_mat_vec);
     nh->getParam("distortion_coeffs", distortion_coeffs_vec);
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
         ROS_INFO("Camera coeffs set");
     }
 
-    FrameInfo fi(nh, ad, it, camera_px_width, camera_px_height);
+    FrameInfo fi(nh, ad, it, camera_px_width, camera_px_height, pix2m);
     ros::Rate loop_rate(30);
     while (ros::ok()) {
         camera >> frame;
@@ -130,7 +131,6 @@ int main(int argc, char** argv)
 
         // detect aruco markers
         ad->detect(frame_und);
-        MouseDetect::pix2m = ad->get_pix2m();
 
         std::vector<cv::Vec6d> poses = ad->get_current_poses();
         std::vector<cv::Point2f> pix_pos = ad->get_pixel_positions();
@@ -139,8 +139,8 @@ int main(int argc, char** argv)
             // publish robot pose if a robot was detected
             ros_basics_msgs::SimplePoseStamped pose; // ! we only use the first robot (no multi robot support for now)
             pose.header.stamp = ros::Time::now();
-            pose.pose.xyz.x = (pix_pos[0].x - camera_px_width / 2) * ad->get_pix2m();
-            pose.pose.xyz.y = -(pix_pos[0].y - camera_px_height / 2) * ad->get_pix2m();
+            pose.pose.xyz.x = (pix_pos[0].x - camera_px_width / 2) * pix2m;
+            pose.pose.xyz.y = -(pix_pos[0].y - camera_px_height / 2) * pix2m;
             // pose.pose.xyz.x = poses[0][0];
             // pose.pose.xyz.y = poses[0][1];
             pose.pose.xyz.z = poses[0][2];

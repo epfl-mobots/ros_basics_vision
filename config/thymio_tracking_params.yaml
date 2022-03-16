@@ -3,7 +3,8 @@ camera_px_width: 640
 camera_px_height: 480
 marker_size_cm: 0.075
 annotate_image: true
-simu_pix2m: 0.0017
+simu_pix2m: 0.0015837
+real_pix2m: 0.0014703
 reinit_pix2m: false
 use_mouse_waypoints: true
 camera_matrix: [685.842653,0.000000,342.842061,0.000000,688.166370,246.265636,0.000000,0.000000,1.000000]

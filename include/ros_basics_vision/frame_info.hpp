@@ -15,7 +15,7 @@
 namespace ros_tp {
     class FrameInfo {
     public:
-        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<image_transport::ImageTransport> it, int width, int height) : _nh(nh), _it(it)
+        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<image_transport::ImageTransport> it, int width, int height, double pix2m) : _nh(nh), _it(it), _pix2m_v(pix2m)
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
@@ -23,14 +23,15 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -0.63);
+            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -1);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
             _ccenter = cv::Point(C.at<double>(0, 0) / _pix2m(), C.at<double>(0, 1) / _pix2m());
         }
 
-        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<ArucoDetector> ad, std::shared_ptr<image_transport::ImageTransport> it, int width, int height) : _nh(nh), _ad(ad), _it(it)
+        FrameInfo(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<ArucoDetector> ad, std::shared_ptr<image_transport::ImageTransport> it, int width, int height, double pix2m)
+            : _nh(nh), _ad(ad), _it(it), _pix2m_v(pix2m)
         {
             _annot_image_pub = _it->advertise("robot_view/image_annot", 1);
             _get_waypoints_cli = _nh->serviceClient<ros_basics_msgs::GetWaypoints>("get_waypoints");
@@ -38,7 +39,7 @@ namespace ros_tp {
             _prev_stamp = ros::Time::now();
 
             cv::Vec3d rvec(0., 0., 0.);
-            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -0.63);
+            cv::Vec3d tvec((width / 2.) * _pix2m(), (height / 2.) * _pix2m(), -1);
             cv::Mat R;
             cv::Rodrigues(rvec, R);
             cv::Mat C = R.inv() * tvec;
@@ -189,12 +190,7 @@ namespace ros_tp {
     protected:
         virtual double _pix2m()
         {
-            if (_ad != nullptr) {
-                return _ad->get_pix2m();
-            }
-            else {
-                return _pix2m_simu;
-            }
+            return _pix2m_v;
         }
 
         image_transport::Publisher _annot_image_pub;
@@ -205,7 +201,7 @@ namespace ros_tp {
         ros::Time _prev_stamp;
         ros::Duration _dt;
         cv::Point _ccenter;
-        double _pix2m_simu;
+        double _pix2m_v;
     };
 
 } // namespace ros_tp

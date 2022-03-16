@@ -16,7 +16,7 @@
 using namespace ros_tp;
 
 struct MouseDetect {
-    static void onMouse(int event, int x, int y, int flags, void* param) // now it's in param
+    static void onMouse(int event, int x, int y, int flags, void* param)
     {
         if (event == cv::EVENT_LBUTTONDOWN) {
             cv::Point p(x - camera_px_width / 2, y - camera_px_height / 2);
@@ -45,11 +45,10 @@ double MouseDetect::camera_px_height;
 struct RawFrameWrapper : public FrameInfo {
 public:
     RawFrameWrapper(std::shared_ptr<ros::NodeHandle> nh, std::shared_ptr<image_transport::ImageTransport> it, double pix2m)
-        : FrameInfo(nh, it, 640, 480),
+        : FrameInfo(nh, it, 640, 480, pix2m),
           _window_name("Tracking Robot - Interactive")
 
     {
-        _pix2m_simu = pix2m;
         this->_nh->param<bool>("annotate_image", _annotate_image, true);
         this->_nh->param<bool>("use_mouse_waypoints", _use_mouse_waypoints, true);
         if (_use_mouse_waypoints) {
